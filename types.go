@@ -1,5 +1,9 @@
 package eventide
 
+type GatewayURL struct {
+	URL string `json:"url"`
+}
+
 type User struct {
 	Id            string `json:"id"`
 	Username      string `json:"username"`
@@ -18,10 +22,12 @@ type User struct {
 	PublicFlags   int    `json:"public_flags"`
 }
 
+
+
 type Message struct {
-	Id                string   `json:"id"`
-	ChannelId         string   `json:"channel_id"`
-	GuildId           string   `json:"guild_id"`
+	ID                string   `json:"id"`
+	ChannelID         string   `json:"channel_id"`
+	GuildId           string   `json:"guild_id,omitempty"`
 	Author            *User    `json:"author"`
 	Member            any      `json:"member"`
 	Content           string   `json:"content"`
@@ -43,10 +49,82 @@ type Message struct {
 	ApplicationID     string   `json:"application_id"`
 	MessageReference  any      `json:"message_reference"`
 	Flags             int      `json:"flags"`
-	ReferencedMessage *Message `json:"message"`
+	ReferencedMessage *Message `json:"referenced_message"`
 	Interaction       any      `json:"interaction"`
-	Thread            any      `json:"thread"`
+	Thread            any      `json:"thread,omitempty"`
 	Components        any      `json:"components"`
 	StickerItems      any      `json:"sticker_items"`
 	Stickers          any      `json:"stickers"`
+}
+
+type MessageReference struct {
+	MessageID string `json:"message_id"`
+	ChannelID string `json:"channel_id"`
+	GuildID   string `json:"guild_id,omitempty"`
+}
+
+type MessageSend struct {
+	Content string   `json:"content,omitempty"`
+	Embeds  []*Embed `json:"embeds"`
+	TTS     bool     `json:"tts"`
+}
+
+type Embed struct {
+	Title       string          `json:"title,omitempty"`
+	Type        string          `json:"type,omitempty"`
+	Description string          `json:"description,omitempty"`
+	URL         string          `json:"url,omitempty"`
+	Timestamp   string          `json:"timestamp,omitempty"`
+	Color       int             `json:"color,omitempty"`
+	Footer      *EmbedFooter    `json:"footer,omitempty"`
+	Image       *EmbedImage     `json:"image,omitempty"`
+	Thumbnail   *EmbedThumbnail `json:"thumbnail,omitempty"`
+	Video       *EmbedVideo     `json:"video,omitempty"`
+	Provider    *EmbedProvider  `json:"provider,omitempty"`
+	Author      *EmbedAuthor    `json:"author,omitempty"`
+	Fields      []*EmbedField   `json:"fields,omitempty"`
+}
+
+type EmbedFooter struct {
+	Text         string `json:"text,omitempty"`
+	IconURL      string `json:"icon_url,omitempty"`
+	ProxyIconURL string `json:"proxy_icon_url,omitempty"`
+}
+
+type EmbedImage struct {
+	URL      string `json:"url"`
+	ProxyURL string `json:"proxy_url,omitempty"`
+	Width    int    `json:"width,omitempty"`
+	Height   int    `json:"height,omitempty"`
+}
+
+type EmbedThumbnail struct {
+	URL      string `json:"url"`
+	ProxyURL string `json:"proxy_url,omitempty"`
+	Width    int    `json:"width,omitempty"`
+	Height   int    `json:"height,omitempty"`
+}
+
+type EmbedVideo struct {
+	URL    string `json:"url,omitempty"`
+	Width  int    `json:"width,omitempty"`
+	Height int    `json:"height,omitempty"`
+}
+
+type EmbedProvider struct {
+	URL  string `json:"url,omitempty"`
+	Name string `json:"name,omitempty"`
+}
+
+type EmbedAuthor struct {
+	URL          string `json:"url,omitempty"`
+	Name         string `json:"name"`
+	IconURL      string `json:"icon_url,omitempty"`
+	ProxyIconURL string `json:"proxy_icon_url,omitempty"`
+}
+
+type EmbedField struct {
+	Name   string `json:"name,omitempty"`
+	Value  string `json:"value,omitempty"`
+	Inline bool   `json:"inline,omitempty"`
 }
