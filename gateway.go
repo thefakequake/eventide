@@ -21,7 +21,7 @@ type OpHello struct {
 
 type OpIdentify struct {
 	Token      string             `json:"token"`
-	Intents    int                `json:"intents"`
+	Intents    Intents            `json:"intents"`
 	Properties IdentifyProperties `json:"properties"`
 }
 
@@ -89,7 +89,7 @@ func (c *Client) identify() error {
 		Code: 2,
 		Data: OpIdentify{
 			Token:      c.token,
-			Intents:    14023,
+			Intents:    IntentsAll,
 			Properties: c.Identify,
 		},
 	}

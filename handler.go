@@ -27,27 +27,48 @@ func (c *Client) AddHandler(h any) {
 
 	c.log(LogInfo, "registered event handler for type %s", eventType.String())
 
-	c.handlerLock.Lock()
+	c.handlersLock.Lock()
 	c.handlers[eventType] = append(c.handlers[eventType], Handler{Callback: v})
-	c.handlerLock.Unlock()
+	c.handlersLock.Unlock()
 }
 
 func (c *Client) runHandlers(op Op[json.RawMessage]) {
 	e, err := eventCodec.DecodeEvent(op)
 	if err != nil {
+		c.log(LogWarn, "failed to decode event %s: %s", op.Type, err)
 		return
 	}
 	v := reflect.ValueOf(e)
 
-	c.handlerLock.RLock()
+	c.handlersLock.RLock()
 	for _, h := range c.handlers[v.Type()] {
 		go h.Callback.Call([]reflect.Value{v})
 	}
-	c.handlerLock.RUnlock()
+	c.handlersLock.RUnlock()
 }
 
 func (c *Client) registerHandlers() {
-	c.AddHandler(func (r *Ready) {
+	c.AddHandler(func(r *Ready) {
+		c.Lock()
 		c.User = r.User
+		c.Unlock()
+	})
+
+	c.AddHandler(func(g *GuildCreate) {
+		c.guildsLock.Lock()
+		c.Guilds[g.ID] = g.Guild
+		c.guildsLock.Unlock()
+	})
+
+	c.AddHandler(func(g *GuildUpdate) {
+		c.guildsLock.Lock()
+		c.Guilds[g.ID] = g.Guild
+		c.guildsLock.Unlock()
+	})
+
+	c.AddHandler(func(g *GuildDelete) {
+		c.guildsLock.Lock()
+		delete(c.Guilds, g.ID)
+		c.guildsLock.Unlock()
 	})
 }

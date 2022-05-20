@@ -8,6 +8,9 @@ import (
 var eventCodec = NewEventCodec(
 	new(Ready),
 	new(MessageCreate),
+	new(GuildCreate),
+	new(GuildUpdate),
+	new(GuildDelete),
 )
 
 type Event interface {
@@ -52,4 +55,31 @@ type MessageCreate struct {
 	*Message
 }
 
-func (r *MessageCreate) Type() string { return "MESSAGE_CREATE" }
+func (m *MessageCreate) Type() string { return "MESSAGE_CREATE" }
+
+type PresenceUpdate struct {
+	User       *User       `json:"user"`
+	GuildID    string      `json:"guild_id"`
+	Status     string      `json:"status"`
+	Activities []*Activity `json:"activities"`
+}
+
+func (p *PresenceUpdate) Type() string { return "PRESENCE_UPDATE" }
+
+type GuildCreate struct {
+	*Guild
+}
+
+func (g *GuildCreate) Type() string { return "GUILD_CREATE" }
+
+type GuildUpdate struct {
+	*Guild
+}
+
+func (g *GuildUpdate) Type() string { return "GUILD_UPDATE" }
+
+type GuildDelete struct {
+	*Guild
+}
+
+func (g *GuildDelete) Type() string { return "GUILD_DELETE" }

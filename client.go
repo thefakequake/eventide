@@ -7,10 +7,10 @@ import (
 	"os/signal"
 	"reflect"
 	"runtime"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
-	"strings"
 
 	"github.com/gorilla/websocket"
 )
@@ -24,12 +24,14 @@ type Client struct {
 	lastSequence int64
 	listening    chan any
 	handlers     map[reflect.Type][]Handler
-	handlerLock  sync.RWMutex
+	handlersLock sync.RWMutex
 	token        string
 	Identify     IdentifyProperties
 	LogLevel     int
 	User         *User
 	SessionID    string
+	Guilds       map[string]*Guild
+	guildsLock   sync.RWMutex
 }
 
 func NewClient(token string) *Client {
