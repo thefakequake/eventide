@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 // https://discord.com/developers/docs/resources/audit-log#audit-log-object-audit-log-structure
 type AuditLog struct {
@@ -36,7 +36,7 @@ type AuditLogEntry struct {
 	ID string `json:"id"`
 
 	// Type of action that occurred
-	ActionType *AuditLogEvent `json:"action_type"`
+	ActionType AuditLogEvent `json:"action_type"`
 
 	// Additional info for certain event types
 	Options *OptionalAuditEntryInfo `json:"options,omitempty"`
@@ -50,15 +50,54 @@ type AuditLogEvent int
 
 // TODO: finish this
 const (
-	AuditLogEventGuildUpdate = 1
-	AuditLogEventChannelCreate = 10
-	AuditLogEventChannelUpdate = 11
-	AuditLogEventChannelDelete = 12
-	AuditLogEventOverwriteCreate = 13
-	AuditLogEventChannelOverwriteCreate = 13
-	AuditLogEventChannelOverwriteUpdate = 14
-	AuditLogEventChannelOverwriteDelete = 15
-	AuditLogEventMemberKick = 20
+	AuditLogEventGuildUpdate                        AuditLogEvent = 1
+	AuditLogEventChannelCreate                      AuditLogEvent = 10
+	AuditLogEventChannelUpdate                      AuditLogEvent = 11
+	AuditLogEventChannelDelete                      AuditLogEvent = 12
+	AuditLogEventOverwriteCreate                    AuditLogEvent = 13
+	AuditLogEventChannelOverwriteCreate             AuditLogEvent = 13
+	AuditLogEventChannelOverwriteUpdate             AuditLogEvent = 14
+	AuditLogEventChannelOverwriteDelete             AuditLogEvent = 15
+	AuditLogEventMemberKick                         AuditLogEvent = 20
+	AuditLogEventMemberPrune                        AuditLogEvent = 21
+	AuditLogEventMemberBanAdd                       AuditLogEvent = 22
+	AuditLogEventMemberUpdate                       AuditLogEvent = 24
+	AuditLogEventMemberRoleUpdate                   AuditLogEvent = 25
+	AuditLogEventMemberMove                         AuditLogEvent = 26
+	AuditLogEventMemberDisconnect                   AuditLogEvent = 27
+	AuditLogEventBotAdd                             AuditLogEvent = 28
+	AuditLogEventRoleCreate                         AuditLogEvent = 30
+	AuditLogEventRoleUpdate                         AuditLogEvent = 31
+	AuditLogEventRoleDelete                         AuditLogEvent = 32
+	AuditLogEventInviteCreate                       AuditLogEvent = 40
+	AuditLogEventInviteUpdate                       AuditLogEvent = 41
+	AuditLogEventInviteDelete                       AuditLogEvent = 42
+	AuditLogEventWebhookCreate                      AuditLogEvent = 50
+	AuditLogEventWebhookUpdate                      AuditLogEvent = 51
+	AuditLogEventWebhookDelete                      AuditLogEvent = 52
+	AuditLogEventEmojiCreate                        AuditLogEvent = 60
+	AuditLogEventEmojiUpdate                        AuditLogEvent = 61
+	AuditLogEventEmojiDelete                        AuditLogEvent = 62
+	AuditLogEventMessageDelete                      AuditLogEvent = 72
+	AuditLogEventMessageBulkDelete                  AuditLogEvent = 73
+	AuditLogEventMessagePin                         AuditLogEvent = 74
+	AuditLogEventMessageUnpin                       AuditLogEvent = 75
+	AuditLogEventIntegrationCreate                  AuditLogEvent = 80
+	AuditLogEventIntegrationUpdate                  AuditLogEvent = 81
+	AuditLogEventIntegrationDelete                  AuditLogEvent = 82
+	AuditLogEventStageInstanceCreate                AuditLogEvent = 83
+	AuditLogEventStageInstanceUpdate                AuditLogEvent = 84
+	AuditLogEventStageInstanceDelete                AuditLogEvent = 85
+	AuditLogEventStickerCreate                      AuditLogEvent = 90
+	AuditLogEventStickerUpdate                      AuditLogEvent = 91
+	AuditLogEventStickerDelete                      AuditLogEvent = 92
+	AuditLogEventGuildScheduledEventCreate          AuditLogEvent = 100
+	AuditLogEventGuildScheduledEventUpdate          AuditLogEvent = 101
+	AuditLogEventGuildScheduledEventDelete          AuditLogEvent = 102
+	AuditLogEventThreadCreate                       AuditLogEvent = 110
+	AuditLogEventThreadUpdate                       AuditLogEvent = 111
+	AuditLogEventThreadDelete                       AuditLogEvent = 112
+	AuditLogEventApplicationCommandPermissionUpdate AuditLogEvent = 121
 )
 
 // https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-optional-audit-entry-info

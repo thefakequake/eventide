@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 import (
 	"time"
@@ -6,6 +6,9 @@ import (
 
 // https://discord.com/developers/docs/resources/guild-template#guild-template-object-guild-template-structure
 type GuildTemplate struct {
+	// The template code (unique ID)
+	Code string `json:"code"`
+
 	// Template name
 	Name string `json:"name"`
 

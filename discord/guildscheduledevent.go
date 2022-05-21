@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 import (
 	"time"
@@ -31,19 +31,19 @@ type GuildScheduledEvent struct {
 	ScheduledEndTime time.Time `json:"scheduled_end_time"`
 
 	// The privacy level of the scheduled event
-	PrivacyLevel *PrivacyLevel `json:"privacy_level"`
+	PrivacyLevel *GuildScheduledEventPrivacyLevel `json:"privacy_level"`
 
 	// The status of the scheduled event
-	Status *EventStatus `json:"status"`
+	Status *GuildScheduledEventStatus `json:"status"`
 
 	// The type of the scheduled event
-	EntityType *ScheduledEntityType `json:"entity_type"`
+	EntityType *GuildScheduledEventEntityType `json:"entity_type"`
 
 	// The ID of an entity associated with a guild scheduled event
 	EntityID string `json:"entity_id"`
 
 	// Additional metadata for the guild scheduled event
-	EntityMetadata *EntityMetadata `json:"entity_metadata"`
+	EntityMetadata *GuildScheduledEventEntityMetadata `json:"entity_metadata"`
 
 	// The user that created the scheduled event
 	Creator *User `json:"creator,omitempty"`
@@ -54,6 +54,32 @@ type GuildScheduledEvent struct {
 	// The cover image hash of the scheduled event
 	Image string `json:"image,omitempty"`
 }
+
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-privacy-level
+type GuildScheduledEventPrivacyLevel int
+
+const (
+	GuildScheduledEventPrivacyLevelGuildOnly GuildScheduledEventPrivacyLevel = 2
+)
+
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-entity-types
+type GuildScheduledEventEntityType int
+
+const (
+	GuildScheduledEventEntityTypeStageInstance GuildScheduledEventEntityType = iota + 1
+	GuildScheduledEventEntityTypeVoice
+	GuildScheduledEventEntityTypeExternal
+)
+
+// https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-status
+type GuildScheduledEventStatus int
+
+const (
+	GuildScheduledEventStatusScheduled GuildScheduledEventStatus = iota + 1
+	GuildScheduledEventStatusActive
+	GuildScheduledEventStatusCompleted
+	GuildScheduledEventStatusCanceled
+)
 
 // https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-object-guild-scheduled-event-entity-metadata
 type GuildScheduledEventEntityMetadata struct {

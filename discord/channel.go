@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 import (
 	"time"
@@ -6,8 +6,11 @@ import (
 
 // https://discord.com/developers/docs/resources/channel#channel-object-channel-structure
 type Channel struct {
+	// The ID of this channel
+	ID string `json:"id"`
+
 	// The type of channel
-	Type int `json:"type"`
+	Type ChannelType `json:"type"`
 
 	// The ID of the guild (may be missing for some channel objects received over gateway guild dispatches)
 	GuildID string `json:"guild_id,omitempty"`
@@ -24,8 +27,8 @@ type Channel struct {
 	// The channel topic (0-1024 characters)
 	Topic string `json:"topic,omitempty"`
 
-	// Whether the channel is nsfw
-	Nsfw bool `json:"nsfw,omitempty"`
+	// Whether the channel is NSFW
+	NSFW bool `json:"nsfw,omitempty"`
 
 	// The ID of the last message sent in this channel (or thread for GUILD_FORUM channels) (may not point to an existing or valid message or thread)
 	LastMessageID string `json:"last_message_id,omitempty"`
@@ -58,10 +61,10 @@ type Channel struct {
 	LastPinTimestamp time.Time `json:"last_pin_timestamp,omitempty"`
 
 	// Voice region ID for the voice channel, automatic when set to null
-	RtcRegion string `json:"rtc_region,omitempty"`
+	RTCRegion string `json:"rtc_region,omitempty"`
 
 	// The camera video quality mode of the voice channel, 1 when not present
-	VideoQualityMode int `json:"video_quality_mode,omitempty"`
+	VideoQualityMode VideoQualityMode `json:"video_quality_mode,omitempty"`
 
 	// An approximate count of messages in a thread, stops counting at 50
 	MessageCount int `json:"message_count,omitempty"`
@@ -82,11 +85,47 @@ type Channel struct {
 	Permissions string `json:"permissions,omitempty"`
 
 	// Channel flags combined as a bitfield
-	Flags int `json:"flags,omitempty"`
+	Flags ChannelFlags `json:"flags,omitempty"`
 }
+
+// https://discord.com/developers/docs/resources/channel#channel-object-channel-types
+type ChannelType int
+
+const (
+	ChannelTypeGuildText ChannelType = iota
+	ChannelTypeDM
+	ChannelTypeGuildVoice
+	ChannelTypeGroupDM
+	ChannelTypeGuildCategory
+	ChannelTypeGuildNews
+	ChannelTypeGuildNewsThread
+	ChannelTypeGuildPublicThread
+	ChannelTypeGuildPrivateThread
+	ChannelTypeGuildStageVoice
+	ChannelTypeDirectory
+	ChannelTypeGuildForum
+)
+
+// https://discord.com/developers/docs/resources/channel#channel-object-video-quality-modes
+type VideoQualityMode int
+
+const (
+	VideoQualityModeAuto VideoQualityMode = iota + 1
+	VideoQualityModeFull
+)
+
+// https://discord.com/developers/docs/resources/channel#channel-object-channel-flags
+type ChannelFlags int
+
+const (
+	ChannelFlagsPinned ChannelFlags = 1 << iota
+)
 
 // https://discord.com/developers/docs/resources/channel#message-object-message-structure
 type Message struct {
+	// ID of the message
+	ID string `json:"id"`
+
 	// ID of the channel the message was sent in
 	ChannelID string `json:"channel_id"`
 
@@ -109,13 +148,13 @@ type Message struct {
 	EditedTimestamp time.Time `json:"edited_timestamp"`
 
 	// Whether this was a TTS message
-	Tts bool `json:"tts"`
+	TTS bool `json:"tts"`
 
 	// Whether this message mentions everyone
 	MentionEveryone bool `json:"mention_everyone"`
 
 	// Users specifically mentioned in the message
-	Mentions []*UserObjects,WithAnAdditionalPartialMemberField `json:"mentions"`
+	Mentions []*MemberMention `json:"mentions"`
 
 	// Roles specifically mentioned in this message
 	MentionRoles []string `json:"mention_roles"`
@@ -142,7 +181,7 @@ type Message struct {
 	WebhookID string `json:"webhook_id,omitempty"`
 
 	// Type of message
-	Type int `json:"type"`
+	Type MessageType `json:"type"`
 
 	// Sent with Rich Presence-related chat embeds
 	Activity *MessageActivity `json:"activity,omitempty"`
@@ -157,7 +196,7 @@ type Message struct {
 	MessageReference *MessageReference `json:"message_reference,omitempty"`
 
 	// Message flags combined as a bitfield
-	Flags int `json:"flags,omitempty"`
+	Flags MessageFlags `json:"flags,omitempty"`
 
 	// The message associated with the message_reference
 	ReferencedMessage *Message `json:"referenced_message"`
@@ -169,23 +208,89 @@ type Message struct {
 	Thread *Channel `json:"thread,omitempty"`
 
 	// Sent if the message contains components like buttons, action rows, or other interactive components
-	Components []*MessageComponent `json:"components,omitempty"`
+	// Components []*MessageComponent `json:"components,omitempty"`
 
 	// Sent if the message contains stickers
-	StickerItems []*MessageStickerItem `json:"sticker_items,omitempty"`
+	StickerItems []*StickerItem `json:"sticker_items,omitempty"`
 
 	// Deprecated** the stickers sent with the message
 	Stickers []*Sticker `json:"stickers,omitempty"`
 }
 
+type MemberMention struct {
+	*User
+	Member *GuildMember `json:"member"`
+}
+
+// https://discord.com/developers/docs/resources/channel#message-object-message-types
+type MessageType int
+
+const (
+	MessageTypeDefault MessageType = iota
+	MessageTypeRecipientAdd
+	MessageTypeRecipientRemove
+	MessageTypeCall
+	MessageTypeChannelNameChange
+	MessageTypeChannelIconChange
+	MessageTypePinnedMessage
+	MessageTypeGuildMemberJoin
+	MessageTypeUserPremiumGuildSubscription
+	MessageTypeUserPremiumGuildSubscriptionTier1
+	MessageTypeUserPremiumGuildSubscriptionTier2
+	MessageTypeUserPremiumGuildSubscriptionTier3
+	MessageTypeChannelFollowAdd
+	MessageTypeGuildDiscoveryDisqualified
+	MessageTypeGuildDiscoveryRequalified
+	MessageTypeGuildDiscoveryGracePeriodInitialWarning
+	MessageTypeGuildDiscoveryGracePeriodFinalWarning
+	MessageTypeThreadCreated
+	MessageTypeReply
+	MessageTypeChatInputCommand
+	MessageTypeThreadStarterMessage
+	MessageTypeGuildInviteReminder
+	MessageTypeContextMenuCommand
+)
+
 // https://discord.com/developers/docs/resources/channel#message-object-message-activity-structure
 type MessageActivity struct {
+	// Type of message activity
+	Type MessageActivityType `json:"type"`
+
 	// Party_id from a Rich Presence event
 	PartyID string `json:"party_id,omitempty"`
 }
 
+// https://discord.com/developers/docs/resources/channel#message-object-message-activity-types
+type MessageActivityType int
+
+const (
+	MessageActivityTypeJoin MessageActivityType = iota + 1
+	MessageActivityTypeSpectate
+	MessageActivityTypeListen
+	_
+	MessageActivityTypeJoinRequest
+)
+
+// https://discord.com/developers/docs/resources/channel#message-object-message-flags
+type MessageFlags int
+
+const (
+	MessageFlagsCrossposted MessageFlags = 1 << iota
+	MessageFlagsIsCrosspost
+	MessageFlagsSuppressEmbeds
+	MessageFlagsSourceMessageDeleted
+	MessageFlagsUrgent
+	MessageFlagsHasThread
+	MessageFlagsEphemeral
+	MessageFlagsLoading
+	MessageFlagsFailedToMentionSomeRolesInThread
+)
+
 // https://discord.com/developers/docs/resources/channel#message-reference-object-message-reference-structure
 type MessageReference struct {
+	// ID of the originating message
+	MessageID string `json:"message_id,omitempty"`
+
 	// ID of the originating message's channel
 	ChannelID string `json:"channel_id"`
 
@@ -198,12 +303,18 @@ type MessageReference struct {
 
 // https://discord.com/developers/docs/resources/channel#followed-channel-object-followed-channel-structure
 type FollowedChannel struct {
+	// Source channel ID
+	ChannelID string `json:"channel_id"`
+
 	// Created target webhook ID
 	WebhookID string `json:"webhook_id"`
 }
 
 // https://discord.com/developers/docs/resources/channel#reaction-object-reaction-structure
 type Reaction struct {
+	// Times this emoji has been used to react
+	Count int `json:"count"`
+
 	// Whether the current user reacted using this emoji
 	Me bool `json:"me"`
 
@@ -213,8 +324,11 @@ type Reaction struct {
 
 // https://discord.com/developers/docs/resources/channel#overwrite-object-overwrite-structure
 type Overwrite struct {
+	// Role or user ID
+	ID string `json:"id"`
+
 	// Either 0 (role) or 1 (member)
-	Type int `json:"type"`
+	Type OverwriteType `json:"type"`
 
 	// Permission bit set
 	Allow string `json:"allow"`
@@ -223,8 +337,18 @@ type Overwrite struct {
 	Deny string `json:"deny"`
 }
 
+type OverwriteType int
+
+const (
+	OverwriteTypeRole = iota
+	OverwriteTypeMember
+)
+
 // https://discord.com/developers/docs/resources/channel#thread-metadata-object-thread-metadata-structure
-type ThreadMetadataStructure struct {
+type ThreadMetadata struct {
+	// Whether the thread is archived
+	Archived bool `json:"archived"`
+
 	// Duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080
 	AutoArchiveDuration int `json:"auto_archive_duration"`
 
@@ -243,6 +367,9 @@ type ThreadMetadataStructure struct {
 
 // https://discord.com/developers/docs/resources/channel#thread-member-object-thread-member-structure
 type ThreadMember struct {
+	// The ID of the thread
+	ID string `json:"id"`
+
 	// The ID of the user
 	UserID string `json:"user_id"`
 
@@ -255,6 +382,9 @@ type ThreadMember struct {
 
 // https://discord.com/developers/docs/resources/channel#embed-object-embed-structure
 type Embed struct {
+	// Title of embed
+	Title string `json:"title,omitempty"`
+
 	// Type of embed (always "rich" for webhook embeds)
 	Type string `json:"type,omitempty"`
 
@@ -294,6 +424,9 @@ type Embed struct {
 
 // https://discord.com/developers/docs/resources/channel#embed-object-embed-thumbnail-structure
 type EmbedThumbnail struct {
+	// Source URL of thumbnail (only supports HTTP(S) and attachments)
+	URL string `json:"url"`
+
 	// A proxied URL of the thumbnail
 	ProxyURL string `json:"proxy_url,omitempty"`
 
@@ -306,6 +439,9 @@ type EmbedThumbnail struct {
 
 // https://discord.com/developers/docs/resources/channel#embed-object-embed-video-structure
 type EmbedVideo struct {
+	// Source URL of video
+	URL string `json:"url,omitempty"`
+
 	// A proxied URL of the video
 	ProxyURL string `json:"proxy_url,omitempty"`
 
@@ -318,6 +454,9 @@ type EmbedVideo struct {
 
 // https://discord.com/developers/docs/resources/channel#embed-object-embed-image-structure
 type EmbedImage struct {
+	// Source URL of image (only supports HTTP(S) and attachments)
+	URL string `json:"url"`
+
 	// A proxied URL of the image
 	ProxyURL string `json:"proxy_url,omitempty"`
 
@@ -330,12 +469,18 @@ type EmbedImage struct {
 
 // https://discord.com/developers/docs/resources/channel#embed-object-embed-provider-structure
 type EmbedProvider struct {
+	// Name of provider
+	Name string `json:"name,omitempty"`
+
 	// URL of provider
 	URL string `json:"url,omitempty"`
 }
 
 // https://discord.com/developers/docs/resources/channel#embed-object-embed-author-structure
 type EmbedAuthor struct {
+	// Name of author
+	Name string `json:"name"`
+
 	// URL of author
 	URL string `json:"url,omitempty"`
 
@@ -348,6 +493,9 @@ type EmbedAuthor struct {
 
 // https://discord.com/developers/docs/resources/channel#embed-object-embed-footer-structure
 type EmbedFooter struct {
+	// Footer text
+	Text string `json:"text"`
+
 	// URL of footer icon (only supports HTTP(S) and attachments)
 	IconURL string `json:"icon_url,omitempty"`
 
@@ -357,6 +505,9 @@ type EmbedFooter struct {
 
 // https://discord.com/developers/docs/resources/channel#embed-object-embed-field-structure
 type EmbedField struct {
+	// Name of the field
+	Name string `json:"name"`
+
 	// Value of the field
 	Value string `json:"value"`
 
@@ -366,6 +517,9 @@ type EmbedField struct {
 
 // https://discord.com/developers/docs/resources/channel#attachment-object-attachment-structure
 type Attachment struct {
+	// Attachment ID
+	ID string `json:"id"`
+
 	// Name of file attached
 	Filename string `json:"filename"`
 
@@ -396,11 +550,14 @@ type Attachment struct {
 
 // https://discord.com/developers/docs/resources/channel#channel-mention-object-channel-mention-structure
 type ChannelMention struct {
+	// ID of the channel
+	ID string `json:"id"`
+
 	// ID of the guild containing the channel
 	GuildID string `json:"guild_id"`
 
 	// The type of channel
-	Type int `json:"type"`
+	Type ChannelType `json:"type"`
 
 	// The name of the channel
 	Name string `json:"name"`
@@ -408,6 +565,9 @@ type ChannelMention struct {
 
 // https://discord.com/developers/docs/resources/channel#allowed-mentions-object-allowed-mentions-structure
 type AllowedMentions struct {
+	// An array of allowed mention types to parse from the content.
+	Parse []AllowedMentionType `json:"parse"`
+
 	// Array of role_ids to mention (Max size of 100)
 	Roles []string `json:"roles"`
 
@@ -418,32 +578,11 @@ type AllowedMentions struct {
 	RepliedUser bool `json:"replied_user"`
 }
 
-// https://discord.com/developers/docs/resources/channel#start-thread-in-forum-channel-%-post-/channels/{channel-id#docs-resources-channel/channel-object}/threads-forum-thread-message-params-object
-type ForumThreadMessageParams struct {
-	// Message contents (up to 2000 characters)
-	Content string `json:"content"`
+// https://discord.com/developers/docs/resources/channel#allowed-mentions-object-allowed-mention-types
+type AllowedMentionType string
 
-	// Embedded rich content (up to 6000 characters)
-	Embeds []*Embed `json:"embeds,omitempty"`
-
-	// Allowed mentions for the message
-	AllowedMentions *AllowedMention `json:"allowed_mentions,omitempty"`
-
-	// Components to include with the message
-	Components []*MessageComponent `json:"components,omitempty"`
-
-	// IDs of up to 3 stickers in the server to send in the message
-	StickerIDs []string `json:"sticker_ids"`
-
-	// Contents of the file being sent. See Uploading Files
-	Files[N] *FileContents `json:"files[n]"`
-
-	// JSON-encoded body of non-file params, only for multipart/form-data requests. See Uploading Files
-	PayloadJson string `json:"payload_json,omitempty"`
-
-	// Attachment objects with filename and description`. See Uploading Files
-	Attachments []*Attachment `json:"attachments,omitempty"`
-
-	// Message flags combined as a bitfield (only SUPPRESS_EMBEDS can be set)
-	Flags int `json:"flags,omitempty"`
-}
+const (
+	AllowedMentionTypeRoleMentions     AllowedMentionType = "roles"
+	AllowedMentionTypeUserMentions     AllowedMentionType = "users"
+	AllowedMentionTypeEveryoneMentions AllowedMentionType = "everyone"
+)

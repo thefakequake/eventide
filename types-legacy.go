@@ -8,24 +8,6 @@ type GatewayURL struct {
 	URL string `json:"url"`
 }
 
-
-type ChannelType int
-
-const (
-	ChannelTypeGuildText ChannelType = iota
-	ChannelTypeDM
-	ChannelTypeGuildVoice
-	ChannelTypeGroupDM
-	ChannelTypeGuildCategory
-	ChannelTypeGuildNews
-	ChannelTypeGuildNewsThread
-	ChannelTypeGuildPublicThread
-	ChannelTypeGuildPrivateThread
-	ChannelTypeGuildStageVoice
-	ChannelTypeDirectory
-	ChannelTypeGuildForum
-)
-
 type OverwriteType int
 
 const (
@@ -56,51 +38,6 @@ type Activity struct {
 	Buttons       []*ActivityButton  `json:"buttons"`
 }
 
-type ActivityType int
-
-const (
-	ActivityTypeGame ActivityType = iota
-	ActivityTypeStreaming
-	ActivityTypeListening
-	ActivityTypeWatching
-	ActivityTypeCustom
-	ActivityTypeCompeting
-)
-
-type ActivityEmoji struct {
-	Name     string `json:"name"`
-	ID       string `json:"id"`
-	Animated bool   `json:"animated"`
-}
-
-type ActivityTimestamp struct {
-	Start int `json:"start"`
-	End   int `json:"end"`
-}
-
-type ActivityParty struct {
-	ID   string `json:"id"`
-	Size [2]int `json:"size"`
-}
-
-type ActivityAssets struct {
-	LargeImage string `json:"large_image"`
-	LargeText  string `json:"large_text"`
-	SmallImage string `json:"small_image"`
-	SmallText  string `json:"small_text"`
-}
-
-type ActivitySecrets struct {
-	Join     string `json:"join"`
-	Spectate string `json:"spectate"`
-	Match    string `json:"match"`
-}
-
-type ActivityButton struct {
-	Label string `json:"label"`
-	URL   string `json:"url"`
-}
-
 type WelcomeScreen struct {
 	Description     *string                 `json:"description"`
 	WelcomeChannels []*WelcomeScreenChannel `json:"welcome_channels"`
@@ -123,94 +60,8 @@ type StageInstance struct {
 	GuildScheduledEventID string       `json:"guild_scheduled_event_id"`
 }
 
-type PrivacyLevel int
-
-const (
-	PrivacyLevelPublic PrivacyLevel = iota
-	PrivacyLevelGuildOnly
-)
-
-type StickerType int
-
-const (
-	StickerTypeStandard StickerType = iota
-	StickerTypeGuild
-)
-
-type StickerFormatType int
-
-const (
-	StickerFormatTypePNG    StickerFormatType = iota
-	StickerFormatTypeAPNG   StickerFormatType = iota
-	StickerFormatTypeLottie StickerFormatType = iota
-)
-
-type GuildScheduledEventPrivacyLevel int
-
-const (
-	GuildScheduledEventPrivacyLevelGuildOnly GuildScheduledEventPrivacyLevel = 2
-)
-
-type GuildScheduledEventEntityType int
-
-const (
-	GuildScheduledEventEntityTypeStageInstance GuildScheduledEventEntityType = iota
-	GuildScheduledEventEntityTypeVoice
-	GuildScheduledEventEntityTypeExternal
-)
-
-type GuildScheduledEventStatus int
-
-const (
-	GuildScheduledEventStatusScheduled GuildScheduledEventStatus = iota
-	GuildScheduledEventStatusActive
-	GuildScheduledEventStatusCompleted
-	GuildScheduledEventStatusCanceled
-)
-
-type EntityMetadata struct {
-	Location string `json:"location"`
-}
-
-type MessageType int
-
-const (
-	MessageTypeDefault MessageType = iota
-	MessageTypeRecipientAdd
-	MessageTypeRecipientRemove
-	MessageTypeCall
-	MessageTypeChannelNameChange
-	MessageTypeChannelIconChange
-	MessageTypePinnedMessage
-	MessageTypeGuildMemberJoin
-	MessageTypeUserPremiumGuildSubscription
-	MessageTypeUserPremiumGuildSubscriptionTier1
-	MessageTypeUserPremiumGuildSubscriptionTier2
-	MessageTypeUserPremiumGuildSubscriptionTier3
-	MessageTypeChannelFollowAdd
-	MessageTypeGuildDiscoveryDisqualified
-	MessageTypeGuildDiscoveryRequalified
-	MessageTypeGuildDiscoveryGracePeriodInitialWarning
-	MessageTypeGuildDiscoveryGracePeriodFinalWarning
-	MessageTypeThreadCreated
-	MessageTypeReply
-	MessageTypeChatInputCommand
-	MessageTypeThreadStarterMessage
-	MessageTypeGuildInviteReminder
-	MessageTypeContextMenuCommand
-)
-
 type MessageSend struct {
 	Content string   `json:"content,omitempty"`
 	Embeds  []*Embed `json:"embeds"`
 	TTS     bool     `json:"tts"`
 }
-
-type MessageActivityType int
-
-const (
-	MessageActivityTypeJoin MessageActivityType = iota
-	MessageActivityTypeSpectate
-	MessageActivityTypeListen
-	MessageActivityTypeJoinRequest
-)

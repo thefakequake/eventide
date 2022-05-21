@@ -3,6 +3,8 @@ package eventide
 import (
 	"encoding/json"
 	"reflect"
+
+	"github.com/thefakequake/eventide/discord"
 )
 
 type Handler struct {
@@ -48,25 +50,25 @@ func (c *Client) runHandlers(op Op[json.RawMessage]) {
 }
 
 func (c *Client) registerHandlers() {
-	c.AddHandler(func(r *Ready) {
+	c.AddHandler(func(r *discord.Ready) {
 		c.Lock()
 		c.User = r.User
 		c.Unlock()
 	})
 
-	c.AddHandler(func(g *GuildCreate) {
+	c.AddHandler(func(g *discord.GuildCreate) {
 		c.guildsLock.Lock()
 		c.Guilds[g.ID] = g.Guild
 		c.guildsLock.Unlock()
 	})
 
-	c.AddHandler(func(g *GuildUpdate) {
+	c.AddHandler(func(g *discord.GuildCreate) {
 		c.guildsLock.Lock()
 		c.Guilds[g.ID] = g.Guild
 		c.guildsLock.Unlock()
 	})
 
-	c.AddHandler(func(g *GuildDelete) {
+	c.AddHandler(func(g *discord.GuildDelete) {
 		c.guildsLock.Lock()
 		delete(c.Guilds, g.ID)
 		c.guildsLock.Unlock()

@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 import (
 	"encoding/json"

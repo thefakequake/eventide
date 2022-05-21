@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 // https://discord.com/developers/docs/resources/webhook#webhook-object-webhook-structure
 type Webhook struct {

@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/thefakequake/eventide/discord"
 )
 
 type Client struct {
@@ -30,7 +31,7 @@ type Client struct {
 	LogLevel     int
 	User         *User
 	SessionID    string
-	Guilds       map[string]*Guild
+	Guilds       map[string]*discord.Guild
 	guildsLock   sync.RWMutex
 }
 

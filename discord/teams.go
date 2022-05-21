@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 // https://discord.com/developers/docs/topics/teams#data-models-team-object
 type Team struct {
@@ -29,6 +29,6 @@ type TeamMember struct {
 	// The ID of the parent team of which they are a member
 	TeamID string `json:"team_id"`
 
-	// The avatar, discriminator, id, and username of the user
+	// The avatar, discriminator, ID, and username of the user
 	User *User `json:"user"`
 }

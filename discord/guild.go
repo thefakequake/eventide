@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 import (
 	"time"
@@ -32,9 +32,6 @@ type Guild struct {
 
 	// Total permissions for the user in the guild (excludes overwrites)
 	Permissions string `json:"permissions"`
-
-	// Voice region ID for the guild (deprecated)
-	Region string `json:"region"`
 
 	// ID of AFK channel
 	AFKChannelID string `json:"afk_channel_id"`
@@ -97,7 +94,7 @@ type Guild struct {
 	Banner string `json:"banner"`
 
 	// Premium tier (Server Boost level)
-	PremiumTier int `json:"premium_tier"`
+	PremiumTier PremiumTier `json:"premium_tier"`
 
 	// The number of boosts this guild currently has
 	PremiumSubscriptionCount int `json:"premium_subscription_count,omitempty"`
@@ -134,7 +131,7 @@ type Guild struct {
 type DefaultMessageNotifications int
 
 const (
-	DefaultMessageNotificationsAllMessages DefaultMessageNotifications = iota
+	DefaultMessageNotificationsAllMessages DefaultMessageNotifications = iota + 1
 	DefaultMessageNotificationsOnlyMentions
 )
 
@@ -142,7 +139,7 @@ const (
 type ExplicitContentFilter int
 
 const (
-	ExplicitContentFilterDisabled ExplicitContentFilter = iota
+	ExplicitContentFilterDisabled ExplicitContentFilter = iota + 1
 	ExplicitContentFilterMembersWithoutRoles
 	ExplicitContentFilterAllMembers
 )
@@ -151,7 +148,7 @@ const (
 type MFALevel int
 
 const (
-	MFALevelNone MFALevel = iota
+	MFALevelNone MFALevel = iota + 1
 	MFALevelElevated
 )
 
@@ -159,7 +156,7 @@ const (
 type VerificationLevel int
 
 const (
-	VerificationLevelNone VerificationLevel = iota
+	VerificationLevelNone VerificationLevel = iota + 1
 	VerificationLevelLow
 	VerificationLevelMedium
 	VerificationLevelHigh
@@ -170,7 +167,7 @@ const (
 type NSFWLevel int
 
 const (
-	NSFWLevelDefault NSFWLevel = iota
+	NSFWLevelDefault NSFWLevel = iota + 1
 	NSFWLevelExplicit
 	NSFWLevelSafe
 	NSFWLevelAgeRestricted
@@ -180,7 +177,7 @@ const (
 type PremiumTier int
 
 const (
-	PremiumTierNone PremiumTier = iota
+	PremiumTierNone PremiumTier = iota + 1
 	PremiumTier1
 	PremiumTier2
 	PremiumTier3
@@ -224,7 +221,6 @@ const (
 	GuildFeatureVIPRegions                    GuildFeature = "VIP_REGIONS"
 	GuildFeatureWelcomeScreenEnabled          GuildFeature = "WELCOME_SCREEN_ENABLED"
 )
-
 
 // https://discord.com/developers/docs/resources/guild#guild-preview-object-guild-preview-structure
 type GuildPreview struct {
@@ -380,7 +376,7 @@ type Integration struct {
 type IntegrationExpireBehavior int
 
 const (
-	IntegrationExpireBehaviorRemoveRole = iota
+	IntegrationExpireBehaviorRemoveRole IntegrationExpireBehavior = iota
 	IntegrationExpireBehaviorKick
 )
 
@@ -437,7 +433,7 @@ type WelcomeScreenChannel struct {
 	// The description shown for the channel
 	Description string `json:"description"`
 
-	// The emoji id, if the emoji is custom
+	// The emoji ID, if the emoji is custom
 	EmojiID string `json:"emoji_id"`
 
 	// The emoji name if custom, the unicode character if standard, or null if no emoji is set

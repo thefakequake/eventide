@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 // https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-structure
 type ApplicationCommand struct {
@@ -42,6 +42,15 @@ type ApplicationCommand struct {
 	Version string `json:"version"`
 }
 
+// https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-types
+type ApplicationCommandType int
+
+const (
+	ApplicationCommandTypeChatInput ApplicationCommandType = iota + 1
+	ApplicationCommandTypeUser
+	ApplicationCommandTypeMessage
+)
+
 // https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-structure
 type ApplicationCommandOption struct {
 	// Type of option
@@ -62,24 +71,41 @@ type ApplicationCommandOption struct {
 	// If the parameter is required or optional--default false
 	Required bool `json:"required,omitempty"`
 
-	// Choices for STRING`, INTEGER`, and NUMBER types for the user to pick from, max 25
+	// Choices for STRING, INTEGER, and NUMBER types for the user to pick from, max 25
 	Choices []*ApplicationCommandOptionChoice `json:"choices,omitempty"`
 
 	// If the option is a subcommand or subcommand group type, these nested options will be the parameters
 	Options []*ApplicationCommandOption `json:"options,omitempty"`
 
 	// If the option is a channel type, the channels shown will be restricted to these types
-	ChannelTypes []*ChannelType `json:"channel_types,omitempty"`
+	ChannelTypes []ChannelType `json:"channel_types,omitempty"`
 
 	// If the option is an INTEGER or NUMBER type, the minimum value permitted
-	MinValue *IntegerFor`Integer`Options,DoubleFor`Number`Options `json:"min_value,omitempty"`
+	MinValue float64 `json:"min_value,omitempty"`
 
 	// If the option is an INTEGER or NUMBER type, the maximum value permitted
-	MaxValue *IntegerFor`Integer`Options,DoubleFor`Number`Options `json:"max_value,omitempty"`
+	MaxValue float64 `json:"max_value,omitempty"`
 
-	// If autocomplete interactions are enabled for this STRING`, INTEGER`, or NUMBER type option
+	// If autocomplete interactions are enabled for this STRING, INTEGER, or NUMBER type option
 	Autocomplete bool `json:"autocomplete"`
 }
+
+// https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-type
+type ApplicationCommandOptionType int
+
+const (
+	ApplicationCommandOptionTypeSubCommand ApplicationCommandOptionType = iota + 1
+	ApplicationCommandOptionTypeSubCommandGroup
+	ApplicationCommandOptionTypeString
+	ApplicationCommandOptionTypeInteger
+	ApplicationCommandOptionTypeBoolean
+	ApplicationCommandOptionTypeUser
+	ApplicationCommandOptionTypeChannel
+	ApplicationCommandOptionTypeRole
+	ApplicationCommandOptionTypeMentionable
+	ApplicationCommandOptionTypeNumber
+	ApplicationCommandOptionTypeAttachment
+)
 
 // https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-choice-structure
 type ApplicationCommandOptionChoice struct {
@@ -89,8 +115,8 @@ type ApplicationCommandOptionChoice struct {
 	// Localization dictionary for the name field. Values follow the same restrictions as name
 	NameLocalizations map[string]string `json:"name_localizations,omitempty"`
 
-	// Value for the choice, up to 100 characters if string
-	Value *String,Integer,OrDouble `json:"value"`
+	// Value for the choice, can be string, integer or float and up to 100 characters if string
+	Value interface{} `json:"value"`
 }
 
 // https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-interaction-data-option-structure
@@ -101,8 +127,8 @@ type ApplicationCommandInteractionDataOption struct {
 	// Value of application command option type
 	Type int `json:"type"`
 
-	// Value of the option resulting from user input
-	Value *String,Integer,OrDouble `json:"value,omitempty"`
+	// Value of the option resulting from user input, can be string, integer or float
+	Value interface{} `json:"value,omitempty"`
 
 	// Present if this option is a group or subcommand
 	Options []*ApplicationCommandInteractionDataOption `json:"options,omitempty"`
@@ -123,7 +149,7 @@ type GuildApplicationCommandPermissions struct {
 	GuildID string `json:"guild_id"`
 
 	// Permissions for the command in the guild, max of 100
-	Permissions []*ApplicationCommandPermission `json:"permissions"`
+	Permissions []*ApplicationCommandPermissions `json:"permissions"`
 }
 
 // https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object-application-command-permissions-structure
@@ -137,3 +163,12 @@ type ApplicationCommandPermissions struct {
 	// True to allow, false`, to disallow
 	Permission bool `json:"permission"`
 }
+
+// https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object-application-command-permission-type
+type ApplicationCommandPermissionType int
+
+const (
+	ApplicationCommandPermissionTypeRole ApplicationCommandPermissionType = iota + 1
+	ApplicationCommandPermissionTypeUser
+	ApplicationCommandPermissionTypeChannel
+)

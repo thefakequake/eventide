@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 // https://discord.com/developers/docs/resources/application#application-object-application-structure
 type Application struct {
@@ -14,7 +14,7 @@ type Application struct {
 	// The description of the app
 	Description string `json:"description"`
 
-	// An array of RPC origin urls, if RPC is enabled
+	// An array of RPC origin URLs, if RPC is enabled
 	RPCOrigins []string `json:"rpc_origins,omitempty"`
 
 	// When false only app owner can join the app's bot to guilds

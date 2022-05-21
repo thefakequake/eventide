@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 // https://discord.com/developers/docs/topics/permissions#role-object-role-structure
 type Role struct {

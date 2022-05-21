@@ -22,8 +22,6 @@ type User struct {
 	PublicFlags   int    `json:"public_flags"`
 }
 
-
-
 type Message struct {
 	ID                string   `json:"id"`
 	ChannelID         string   `json:"channel_id"`

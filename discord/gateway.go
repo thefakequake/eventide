@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 // https://discord.com/developers/docs/topics/gateway#payloads-gateway-payload-structure
 type GatewayPayload struct {
@@ -21,7 +21,7 @@ type Identify struct {
 	Token string `json:"token"`
 
 	// Connection properties
-	Properties *Object `json:"properties"`
+	Properties *IdentifyConnectionProperties `json:"properties"`
 
 	// Whether this connection supports compression of packets
 	Compress bool `json:"compress,omitempty"`
@@ -33,10 +33,22 @@ type Identify struct {
 	Shard []int `json:"shard,omitempty"`
 
 	// Presence structure for initial presence information
-	Presence *UpdatePresence `json:"presence,omitempty"`
+	Presence *GatewayPresenceUpdate `json:"presence,omitempty"`
 
 	// The Gateway Intents you wish to receive
 	Intents int `json:"intents"`
+}
+
+// https://discord.com/developers/docs/topics/gateway#identify-identify-connection-properties
+type IdentifyConnectionProperties struct {
+	// Your operating system
+	OS string `json:"$os"`
+
+	// Your library name
+	Browser string `json:"$browser"`
+
+	// Your library name
+	Device string `json:"$device"`
 }
 
 // https://discord.com/developers/docs/topics/gateway#resume-resume-structure
@@ -66,7 +78,7 @@ type GuildRequestMembers struct {
 	Presences bool `json:"presences,omitempty"`
 
 	// Used to specify which users you wish to fetch
-	UserIDs *SnowflakeOrArrayOfSnowflakes `json:"user_ids,omitempty"`
+	UserIDs []string `json:"user_ids,omitempty"`
 
 	// Nonce to identify the Guild Members Chunk response
 	Nonce string `json:"nonce,omitempty"`
@@ -114,16 +126,16 @@ type Activity struct {
 	Name string `json:"name"`
 
 	// Activity type
-	Type int `json:"type"`
+	Type ActivityType `json:"type"`
 
-	// Stream url, is validated when type is 1
+	// Stream URL, is validated when type is 1
 	URL string `json:"url,omitempty"`
 
 	// Unix timestamp (in milliseconds) of when the activity was added to the user's session
 	CreatedAt int `json:"created_at"`
 
 	// Unix timestamps for start and/or end of the game
-	Timestamps *Timestamps `json:"timestamps,omitempty"`
+	Timestamps *ActivityTimestamps `json:"timestamps,omitempty"`
 
 	// Application ID for the game
 	ApplicationID string `json:"application_id,omitempty"`
@@ -138,22 +150,115 @@ type Activity struct {
 	Emoji *Emoji `json:"emoji,omitempty"`
 
 	// Information for the current party of the player
-	Party *Party `json:"party,omitempty"`
+	Party *ActivityParty `json:"party,omitempty"`
 
 	// Images for the presence and their hover texts
-	Assets *Assets `json:"assets,omitempty"`
+	Assets *ActivityAssets `json:"assets,omitempty"`
 
 	// Secrets for Rich Presence joining and spectating
-	Secrets *Secrets `json:"secrets,omitempty"`
+	Secrets *ActivitySecrets `json:"secrets,omitempty"`
 
 	// Whether or not the activity is an instanced game session
 	Instance bool `json:"instance,omitempty"`
 
-	// Activity flags OR`d together, describes what the payload includes
-	Flags int `json:"flags,omitempty"`
+	// Activity flags OR'd together, describes what the payload includes
+	Flags ActivityFlags `json:"flags,omitempty"`
 
 	// The custom buttons shown in the Rich Presence (max 2)
-	Buttons []*Button `json:"buttons,omitempty"`
+	Buttons []*ActivityButton `json:"buttons,omitempty"`
+}
+
+// https://discord.com/developers/docs/topics/gateway#activity-object-activity-types
+type ActivityType int
+
+const (
+	ActivityTypeGame ActivityType = iota
+	ActivityTypeStreaming
+	ActivityTypeListening
+	ActivityTypeWatching
+	ActivityTypeCustom
+	ActivityTypeCompeting
+)
+
+// https://discord.com/developers/docs/topics/gateway#activity-object-activity-timestamps
+type ActivityTimestamps struct {
+	// Unix time (in milliseconds) of when the activity started
+	Start int `json:"start,omitempty"`
+
+	// Unix time (in milliseconds) of when the activity ends
+	End int `json:"end,omitempty"`
+}
+
+// https://discord.com/developers/docs/topics/gateway#activity-object-activity-emoji
+type ActivityEmoji struct {
+	// The name of the emoji
+	Name string `json:"name"`
+
+	// The ID of the emoji
+	ID string `json:"id,omitempty"`
+
+	// Whether the emoji is animated
+	Animated bool `json:"animated,omitempty"`
+}
+
+// https://discord.com/developers/docs/topics/gateway#activity-object-activity-party
+type ActivityParty struct {
+	// The ID of the party
+	ID string `json:"id,omitempty"`
+
+	// Array of two integers (current_size, max_size)
+	Size []int `json:"size,omitempty"`
+}
+
+// https://discord.com/developers/docs/topics/gateway#activity-object-activity-assets
+type ActivityAssets struct {
+	// See Activity Asset Image
+	LargeImage string `json:"large_image,omitempty"`
+
+	// Text displayed when hovering over the large image of the activity
+	LargeText string `json:"large_text,omitempty"`
+
+	// see Activity Asset Image
+	SmallImage string `json:"small_image,omitempty"`
+
+	// Text displayed when hovering over the small image of the activity
+	SmallText string `json:"small_text,omitempty"`
+}
+
+// https://discord.com/developers/docs/topics/gateway#activity-object-activity-secrets
+type ActivitySecrets struct {
+	// The secret for joining a party
+	Join string `json:"join,omitempty"`
+
+	// The secret for spectating a game
+	Spectate string `json:"spectate,omitempty"`
+
+	// The secret for a specific instanced match
+	Match string `json:"match,omitempty"`
+}
+
+// https://discord.com/developers/docs/topics/gateway#activity-object-activity-flags
+type ActivityFlags int
+
+const (
+	ActivityFlagsInstance ActivityFlags = 1 << iota
+	ActivityFlagsJoin
+	ActivityFlagsSpectate
+	ActivityFlagsJoinRequest
+	ActivityFlagsSync
+	ActivityFlagsPlay
+	ActivityFlagsPartyPrivacyFriends
+	ActivityFlagsPartyPrivacyVoiceChannel
+	ActivityFlagsEmbedded
+)
+
+// https://discord.com/developers/docs/topics/gateway#activity-object-activity-buttons
+type ActivityButton struct {
+	// The text shown on the button (1-32 characters)
+	Label string `json:"label"`
+
+	// The URL opened when clicking the button (1-512 characters)
+	URL string `json:"url"`
 }
 
 // https://discord.com/developers/docs/topics/gateway#session-start-limit-object-session-start-limit-structure

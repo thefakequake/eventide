@@ -1,9 +1,19 @@
-package eventide
+package discord
+
+// https://discord.com/developers/docs/interactions/message-components#component-object-component-types
+type ComponentType int
+
+const (
+	ComponentTypeActionRow = iota + 1
+	ComponentTypeButton
+	ComponentTypeSelectMenu
+	ComponentTypeTextInput
+)
 
 // https://discord.com/developers/docs/interactions/message-components#button-object-button-structure
 type Button struct {
 	// 2 for a button
-	Type int `json:"type"`
+	Type ComponentType `json:"type"`
 
 	// One of button styles
 	Style int `json:"style"`
@@ -27,7 +37,7 @@ type Button struct {
 // https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-menu-structure
 type SelectMenu struct {
 	// 3 for a select menu
-	Type int `json:"type"`
+	Type ComponentType `json:"type"`
 
 	// A developer-defined identifier for the select menu, max 100 characters
 	CustomID string `json:"custom_id"`
@@ -69,7 +79,7 @@ type SelectOption struct {
 // https://discord.com/developers/docs/interactions/message-components#text-inputs-text-input-structure
 type TextInput struct {
 	// 4 for a text input
-	Type int `json:"type"`
+	Type ComponentType `json:"type"`
 
 	// A developer-defined identifier for the input, max 100 characters
 	CustomID string `json:"custom_id"`

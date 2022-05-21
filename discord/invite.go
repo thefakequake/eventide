@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 import (
 	"time"
@@ -19,7 +19,7 @@ type Invite struct {
 	Inviter *User `json:"inviter,omitempty"`
 
 	// The type of target for this voice channel invite
-	TargetType int `json:"target_type,omitempty"`
+	TargetType InviteTargetType `json:"target_type,omitempty"`
 
 	// The user whose stream to display for this voice channel stream invite
 	TargetUser *User `json:"target_user,omitempty"`
@@ -43,6 +43,14 @@ type Invite struct {
 	GuildScheduledEvent *GuildScheduledEvent `json:"guild_scheduled_event,omitempty"`
 }
 
+// https://discord.com/developers/docs/resources/invite#invite-object-invite-target-types
+type InviteTargetType int
+
+const (
+	InviteTargetTypeStream InviteTargetType = iota + 1
+	InviteTargetTypeEmbeddedApplication
+)
+
 // https://discord.com/developers/docs/resources/invite#invite-metadata-object-invite-metadata-structure
 type InviteMetadataStructure struct {
 	// Number of times this invite has been used
@@ -63,6 +71,9 @@ type InviteMetadataStructure struct {
 
 // https://discord.com/developers/docs/resources/invite#invite-stage-instance-object-invite-stage-instance-structure
 type InviteStageInstance struct {
+	// The members speaking in the Stage
+	Members []*GuildMember `json:"members"`
+
 	// The number of users in the Stage
 	ParticipantCount int `json:"participant_count"`
 

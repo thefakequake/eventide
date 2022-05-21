@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 // https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-structure
 type Sticker struct {
@@ -21,10 +21,10 @@ type Sticker struct {
 	Asset string `json:"asset,omitempty"`
 
 	// Type of sticker
-	Type int `json:"type"`
+	Type StickerType `json:"type"`
 
 	// Type of sticker format
-	FormatType int `json:"format_type"`
+	FormatType StickerFormatType `json:"format_type"`
 
 	// Whether this guild sticker can be used, may be false due to loss of Server Boosts
 	Available bool `json:"available,omitempty"`
@@ -51,6 +51,23 @@ type StickerItem struct {
 	FormatType int `json:"format_type"`
 }
 
+// https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-types
+type StickerType int
+
+const (
+	StickerTypeStandard StickerType = iota + 1
+	StickerTypeGuild
+)
+
+// https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-format-types
+type StickerFormatType int
+
+const (
+	StickerFormatTypePNG StickerFormatType = iota + 1
+	StickerFormatTypeAPNG
+	StickerFormatTypeLottie
+)
+
 // https://discord.com/developers/docs/resources/sticker#sticker-pack-object-sticker-pack-structure
 type StickerPack struct {
 	// ID of the sticker pack
@@ -73,19 +90,4 @@ type StickerPack struct {
 
 	// ID of the sticker pack's banner image
 	BannerAssetID string `json:"banner_asset_id,omitempty"`
-}
-
-// https://discord.com/developers/docs/resources/sticker#list-nitro-sticker-packs-%-get-/sticker-packs-response-structure
-type Response struct {
-	// Name of the sticker (2-30 characters)
-	Name string `json:"name"`
-
-	// Description of the sticker (empty or 2-100 characters)
-	Description string `json:"description"`
-
-	// Autocomplete/suggestion tags for the sticker (max 200 characters)
-	Tags string `json:"tags"`
-
-	// The sticker file to upload, must be a PNG, APNG, or Lottie JSON file, max 500 KB
-	File *FileContents `json:"file"`
 }

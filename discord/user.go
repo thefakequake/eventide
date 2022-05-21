@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 // https://discord.com/developers/docs/resources/user#user-object-user-structure
 type User struct {
@@ -63,7 +63,7 @@ type Connection struct {
 	Revoked bool `json:"revoked,omitempty"`
 
 	// An array of partial server integrations
-	Integrations *Integration `json:"integrations,omitempty"`
+	Integrations []*Integration `json:"integrations,omitempty"`
 
 	// Whether the connection is verified
 	Verified bool `json:"verified"`

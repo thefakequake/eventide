@@ -1,4 +1,4 @@
-package eventide
+package discord
 
 // https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-interaction-structure
 type Interaction struct {
@@ -9,7 +9,7 @@ type Interaction struct {
 	ApplicationID string `json:"application_id"`
 
 	// The type of interaction
-	Type *InteractionType `json:"type"`
+	Type InteractionType `json:"type"`
 
 	// The command data payload
 	Data *InteractionData `json:"data"`
@@ -42,6 +42,17 @@ type Interaction struct {
 	GuildLocale string `json:"guild_locale,omitempty"`
 }
 
+// https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-interaction-type
+type InteractionType int
+
+const (
+	InteractionTypePing InteractionType = iota + 1
+	InteractionTypeApplicationCommmand
+	InteractionTypeMessageComponent
+	InteractionTypeApplicationCommandAutocomplete
+	InteractionTypeModalSubmit
+)
+
 // https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-interaction-data-structure
 type InteractionData struct {
 	// The ID of the invoked command
@@ -51,7 +62,7 @@ type InteractionData struct {
 	Name string `json:"name"`
 
 	// The type of the invoked command
-	Type int `json:"type"`
+	Type ApplicationCommandType `json:"type"`
 
 	// Converted users + roles + channels + attachments
 	Resolved *ResolvedData `json:"resolved,omitempty"`
@@ -66,37 +77,37 @@ type InteractionData struct {
 	CustomID string `json:"custom_id,omitempty"`
 
 	// The type of the component
-	ComponentType int `json:"component_type,omitempty"`
+	ComponentType ComponentType `json:"component_type,omitempty"`
 
 	// The values the user selected
-	Values []*SelectOptionValue `json:"values,omitempty"`
+	Values []*SelectOption `json:"values,omitempty"`
 
-	// ID the of user or message targeted by a user or message command
+	// ID of the user or message targeted by a user or message command
 	TargetID string `json:"target_id,omitempty"`
 
 	// The values submitted by the user
-	Components []*MessageComponent `json:"components,omitempty"`
+	// Components []*MessageComponent `json:"components,omitempty"`
 }
 
 // https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-resolved-data-structure
 type ResolvedData struct {
 	// The IDs and User objects
-	Users *MapOfSnowflakesToUserObjects `json:"users,omitempty"`
+	Users map[string]*User `json:"users,omitempty"`
 
 	// The IDs and partial Member objects
-	Members *MapOfSnowflakesToPartialMemberObjects `json:"members"`
+	Members map[string]*GuildMember `json:"members"`
 
 	// The IDs and Role objects
-	Roles *MapOfSnowflakesToRoleObjects `json:"roles,omitempty"`
+	Roles map[string]*Role `json:"roles,omitempty"`
 
 	// The IDs and partial Channel objects
-	Channels *MapOfSnowflakesToPartialChannelObjects `json:"channels"`
+	Channels map[string]*Channel `json:"channels"`
 
 	// The IDs and partial Message objects
-	Messages *MapOfSnowflakesToPartialMessagesObjects `json:"messages,omitempty"`
+	Messages map[string]*Message `json:"messages,omitempty"`
 
 	// The IDs and attachment objects
-	Attachments *MapOfSnowflakesToAttachmentObjects `json:"attachments,omitempty"`
+	Attachments map[string]*Attachment `json:"attachments,omitempty"`
 }
 
 // https://discord.com/developers/docs/interactions/receiving-and-responding#message-interaction-object-message-interaction-structure
@@ -114,22 +125,37 @@ type MessageInteraction struct {
 	User *User `json:"user"`
 
 	// The member who invoked the interaction in the guild
-	Member *Member `json:"member,omitempty"`
+	Member *GuildMember `json:"member,omitempty"`
 }
 
 // https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-response-structure
 type InteractionResponse struct {
 	// The type of response
-	Type *InteractionCallbackType `json:"type"`
+	Type InteractionCallbackType `json:"type"`
 
 	// An optional response message
 	Data *InteractionCallbackData `json:"data,omitempty"`
 }
 
+// https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-callback-type
+type InteractionCallbackType int
+
+const (
+	InteractionCallbackTypePong InteractionCallbackType = iota + 1
+	_
+	_
+	InteractionCallbackTypeChannelMessageWithSource
+	InteractionCallbackTypeDeferredChannelMessageWithSource
+	InteractionCallbackTypeDeferredUpdateMessage
+	InteractionCallbackTypeUpdateMessage
+	InteractionCallbackTypeApplicationCommandAutocompleteResult
+	InteractionCallbackTypeModal
+)
+
 // https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-callback-data-structure
 type InteractionCallbackData struct {
 	// Is the response TTS
-	Tts bool `json:"tts,omitempty"`
+	TTS bool `json:"tts,omitempty"`
 
 	// Message content
 	Content string `json:"content,omitempty"`
@@ -144,7 +170,7 @@ type InteractionCallbackData struct {
 	Flags int `json:"flags,omitempty"`
 
 	// Message components
-	Components []*Component `json:"components,omitempty"`
+	// Components []*Component `json:"components,omitempty"`
 
 	// Attachment objects with filename and description
 	Attachments []*Attachment `json:"attachments"`
