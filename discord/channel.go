@@ -212,9 +212,14 @@ type Message struct {
 
 	// Sent if the message contains stickers
 	StickerItems []*StickerItem `json:"sticker_items,omitempty"`
+}
 
-	// Deprecated** the stickers sent with the message
-	Stickers []*Sticker `json:"stickers,omitempty"`
+func (m *Message) Reference() *MessageReference {
+	return &MessageReference{
+		MessageID: m.ID,
+		ChannelID: m.ChannelID,
+		GuildID:   m.GuildID,
+	}
 }
 
 type MemberMention struct {
@@ -239,6 +244,7 @@ const (
 	MessageTypeUserPremiumGuildSubscriptionTier2
 	MessageTypeUserPremiumGuildSubscriptionTier3
 	MessageTypeChannelFollowAdd
+	_
 	MessageTypeGuildDiscoveryDisqualified
 	MessageTypeGuildDiscoveryRequalified
 	MessageTypeGuildDiscoveryGracePeriodInitialWarning
@@ -292,7 +298,7 @@ type MessageReference struct {
 	MessageID string `json:"message_id,omitempty"`
 
 	// ID of the originating message's channel
-	ChannelID string `json:"channel_id"`
+	ChannelID string `json:"channel_id,omitempty"`
 
 	// ID of the originating message's guild
 	GuildID string `json:"guild_id,omitempty"`
@@ -586,3 +592,300 @@ const (
 	AllowedMentionTypeUserMentions     AllowedMentionType = "users"
 	AllowedMentionTypeEveryoneMentions AllowedMentionType = "everyone"
 )
+
+// https://discord.com/developers/docs/resources/channel#modify-channel
+type ModifyChannel struct {
+	// 1-100 character channel name
+	Name string `json:"name,omitempty"`
+
+	// Base64 encoded icon, only for group DMs
+	Icon string `json:"icon,omitempty"`
+
+	// The type of channel; only conversion between text and news is supported and only in guilds with the "NEWS" feature
+	Type ChannelType `json:"type,omitempty"`
+
+	// The position of the channel in the left-hand listing
+	Position int `json:"position,omitempty"`
+
+	// 0-1024 character channel topic
+	Topic string `json:"topic,omitempty"`
+
+	// Whether the channel is NSFW
+	NSFW bool `json:"nsfw,omitempty"`
+
+	// Amount of seconds a user has to wait before sending another message (0-21600); bots, as well as users with the permission manage_messages or manage_channel, are unaffected
+	RateLimitPerUser int `json:"rate_limit_per_user,omitempty"`
+
+	// The bitrate (in bits) of the voice or stage channel; min 8000
+	Bitrate int `json:"bitrate,omitempty"`
+
+	// The user limit of the voice channel; 0 refers to no limit, 1 to 99 refers to a user limit
+	UserLimit int `json:"user_limit,omitempty"`
+
+	// Channel or category-specific permissions
+	PermissionOverwrites []*Overwrite `json:"permission_overwrites,omitempty"`
+
+	// ID of the new parent category for a channel
+	ParentID string `json:"parent_id,omitempty"`
+
+	// Channel voice region ID, automatic when set to null
+	RTCRegion string `json:"rtc_region,omitempty"`
+
+	// The camera video quality mode of the voice channel
+	VoiceQualityMode VideoQualityMode `json:"voice_quality_mode,omitempty"`
+
+	// The default duration that the clients use (not the API) for newly created threads in the channel, in minutes, to automatically archive the thread after recent activity
+	DefaultAutoArchiveDuration int `json:"default_auto_archive_duration,omitempty"`
+
+	// BELOW ARE ALL THREAD ONLY
+
+	// Whether the thread is archived
+	Archived bool `json:"archived,omitempty"`
+
+	// Duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080
+	AutoArchiveDuration int `json:"auto_archive_duration,omitempty"`
+
+	// Whether the thread is locked; when a thread is locked, only users with MANAGE_THREADS can unarchive it
+	Locked bool `json:"locked,omitempty"`
+
+	// Whether non-moderators can add other non-moderators to a thread; only available on private threads
+	Invitable bool `json:"invitable,omitempty"`
+
+	// Channel flags combined as a bitfield; PINNED can only be set for threads in forum channels
+	Flags ChannelFlags `json:"flags"`
+}
+
+// https://discord.com/developers/docs/resources/channel#get-channel-messages
+type GetChannelMessages struct {
+	// Get messages around this message ID
+	Around string `json:"around,omitempty"`
+
+	// Get messages before this message ID
+	Before string `json:"before,omitempty"`
+
+	// Get messages after this message ID
+	After string `json:"after,omitempty"`
+
+	// Max number of messages to return (1-100)
+	Limit int `json:"limit,omitempty"`
+}
+
+// https://discord.com/developers/docs/resources/channel#create-message
+type CreateMessage struct {
+	// Message contents (up to 2000 characters)
+	Content string `json:"content,omitempty"`
+
+	// True if this is a TTS message
+	TTS bool `json:"tts,omitempty"`
+
+	// Embedded rich content (up to 6000 characters)
+	Embeds []*Embed `json:"embeds,omitempty"`
+
+	// Allowed mentions for the message
+	AllowedMentions *AllowedMentions `json:"allowed_mentions,omitempty"`
+
+	// Include to make your message a reply
+	MessageReference *MessageReference `json:"message_reference,omitempty"`
+
+	// Components to include with the message
+	// Components []*MessageComponent `json:"components"`
+
+	// IDs of up to 3 stickers in the server to send in the message
+	StickerIDs []string `json:"sticker_ids,omitempty"`
+
+	// Contents of the file being sent. See Uploading Files
+	// Files []*File `json:"files"`
+
+	// JSON-encoded body of non-file params, only for multipart/form-data requests
+	PayloadJSON string `json:"payload_json,omitempty"`
+
+	// Attachment objects with filename and description.
+	Attachments []*Attachment `json:"attachments,omitempty"`
+
+	// Message flags combined as a bitfield (only SUPPRESS_EMBEDS can be set)
+	Flags MessageFlags `json:"flags,omitempty"`
+}
+
+// https://discord.com/developers/docs/resources/channel#get-reactions
+type GetReactions struct {
+	// Get users after this user ID
+	After string `json:"after,omitempty"`
+
+	// Max number of users to return (1-100)
+	Limit int `json:"limit,omitempty"`
+}
+
+// https://discord.com/developers/docs/resources/channel#edit-message
+type EditMessage struct {
+	// Message contents (up to 2000 characters)
+	Content string `json:"content,omitempty"`
+
+	// Embedded rich content (up to 6000 characters)
+	Embeds []*Embed `json:"embeds,omitempty"`
+
+	// Edit the flags of a message (only SUPPRESS_EMBEDS can currently be set/unset)
+	Flags MessageFlags `json:"flags,omitempty"`
+
+	// Allowed mentions for the message
+	AllowedMentions *AllowedMentions `json:"allowed_mentions,omitempty"`
+
+	// Components to include with the message
+	// Components []*MessageComponent `json:"components,omitempty"`
+
+	// Contents of the file being sent/edited
+	// Files []*File `json:"files,omitempty"`
+
+	// JSON-encoded body of non-file params (multipart/form-data only)
+	PayloadJSON string `json:"payload_json,omitempty"`
+
+	// 	Attached files to keep and possible descriptions for new files
+	Attachments []*Attachment `json:"attachments,omitempty"`
+}
+
+// https://discord.com/developers/docs/resources/channel#bulk-delete-messages
+type BulkDeleteMessages struct {
+	// An array of message IDs to delete (2-100)
+	Messages []string `json:"messages"`
+}
+
+// https://discord.com/developers/docs/resources/channel#edit-channel-permissions
+type EditChannelPermissions struct {
+	// The bitwise value of all allowed permissions (default "0")
+	Allow string `json:"allow,omitempty"`
+	// The bitwise value of all disallowed permissions (default "0")
+	Deny string `json:"deny,omitempty"`
+	// 0 for a role or 1 for a member
+	Type OverwriteType `json:"type"`
+}
+
+// https://discord.com/developers/docs/resources/channel#create-channel-invite
+type CreateChannelInvite struct {
+	// Duration of invite in seconds before expiry, or 0 for never. between 0 and 604800 (7 days)
+	MaxAge int `json:"max_age,omitempty"`
+
+	// Max number of uses or 0 for unlimited. between 0 and 100
+	MaxUses int `json:"max_uses,omitempty"`
+
+	// Whether this invite only grants temporary membership
+	Temporary bool `json:"temporary,omitempty"`
+
+	// If true, don't try to reuse a similar invite (useful for creating many unique one time use invites)
+	Unique bool `json:"unique,omitempty"`
+
+	// The type of target for this voice channel invite
+	TargetType InviteTargetType `json:"target_type,omitempty"`
+
+	// The ID of the user whose stream to display for this invite, required if target_type is 1, the user must be streaming in the channel
+	TargetUserID string `json:"target_user_id,omitempty"`
+
+	// The ID of the embedded application to open for this invite, required if target_type is 2, the application must have the EMBEDDED flag
+	TargetApplicationID string `json:"target_application_id,omitempty"`
+}
+
+// https://discord.com/developers/docs/resources/channel#follow-news-channel
+type FollowNewsChannel struct {
+	// ID of target channel
+	WebhookChannelID string `json:"webhook_channel_id"`
+}
+
+// https://discord.com/developers/docs/resources/channel#start-thread-from-message
+type StartThreadFromMessage struct {
+	// 1-100 character channel name
+	Name string `json:"name"`
+
+	// Duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080
+	AutoArchiveDuration int `json:"auto_archive_duration,omitempty"`
+
+	// Amount of seconds a user has to wait before sending another message (0-21600)
+	RateLimitPerUser int `json:"rate_limit_per_user,omitempty"`
+}
+
+// https://discord.com/developers/docs/resources/channel#start-thread-without-message
+type StartThreadWithoutMessage struct {
+	// 1-100 character channel name
+	Name string `json:"name"`
+
+	// Duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080
+	AutoArchiveDuration int `json:"auto_archive_duration,omitempty"`
+
+	// The type of thread to create
+	Type ChannelType `json:"type,omitempty"`
+
+	// Whether non-moderators can add other non-moderators to a thread; only available when creating a private thread
+	Invitable bool `json:"invitable,omitempty"`
+
+	// Amount of seconds a user has to wait before sending another message (0-21600)
+	RateLimitPerUser int `json:"rate_limit_per_user,omitempty"`
+}
+
+// https://discord.com/developers/docs/resources/channel#start-thread-in-forum-channel
+type StartThreadInForumChannel struct {
+	// 1-100 character channel name
+	Name string `json:"name"`
+
+	// Duration in minutes to automatically archive the thread after recent activity, can be set to: 60, 1440, 4320, 10080
+	AutoArchiveDuration int `json:"auto_archive_duration,omitempty"`
+
+	// Amount of seconds a user has to wait before sending another message (0-21600)
+	RateLimitPerUser int `json:"rate_limit_per_user,omitempty"`
+
+	// Contents of the first message in the forum thread
+	Message *ForumThreadMessageParams
+}
+
+type ForumChannelThreadCreate struct {
+	*Channel
+
+	// The message that was sent inside the thread on creation
+	Message *Message `json:"message"`
+}
+
+// https://discord.com/developers/docs/resources/channel#start-thread-in-forum-channel-forum-thread-message-params-object
+type ForumThreadMessageParams struct {
+	// Message contents (up to 2000 characters)
+	Content string `json:"content"`
+
+	// Embedded rich content (up to 6000 characters)
+	Embeds []*Embed `json:"embeds,omitempty"`
+
+	// Allowed mentions for the message
+	AllowedMentions *AllowedMentions `json:"allowed_mentions,omitempty"`
+
+	// Components to include with the message
+	// Components []*MessageComponent `json:"components,omitempty"`
+
+	// IDs of up to 3 stickers in the server to send in the message
+	StickerIDs []string `json:"sticker_ids"`
+
+	// Contents of the file being sent. See Uploading Files
+	// Files[N] *FileContents `json:"files[n]"`
+
+	// JSON-encoded body of non-file params, only for multipart/form-data requests. See Uploading Files
+	PayloadJSON string `json:"payload_json,omitempty"`
+
+	// Attachment objects with filename and description`. See Uploading Files
+	Attachments []*Attachment `json:"attachments,omitempty"`
+
+	// Message flags combined as a bitfield (only SUPPRESS_EMBEDS can be set)
+	Flags int `json:"flags,omitempty"`
+}
+
+// https://discord.com/developers/docs/resources/channel#list-public-archived-threads
+type ListArchivedThreads struct {
+	// Returns threads before this timestamp
+	Before time.Time `json:"before,omitempty"`
+
+	// Optional maximum number of threads to return
+	Limit int `json:"limit,omitempty"`
+}
+
+type ArchivedThreads struct {
+	// The public, archived threads
+	Threads []*Channel `json:"threads"`
+
+	// A thread member object for each returned thread the current user has joined
+	Members []*ThreadMember `json:"members"`
+
+	// Whether there are potentially additional threads that could be returned on a subsequent call
+	HasMore bool `json:"has_more"`
+}

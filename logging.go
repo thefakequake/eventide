@@ -6,21 +6,23 @@ import (
 	"strings"
 )
 
+type LogLevel int
+
 const (
-	LogError int = iota
+	LogError LogLevel = iota
 	LogWarn
 	LogInfo
 	LogDebug
 )
 
-var logTitles = map[int]string{
+var logTitles = map[LogLevel]string{
 	LogError: "ERROR",
 	LogWarn:  "WARN",
 	LogInfo:  "INFO",
 	LogDebug: "DEBUG",
 }
 
-var Logger = func(level int, message string, a ...any) {
+var Logger = func(level LogLevel, message string, a ...any) {
 	title, ok := logTitles[level]
 	if ok {
 		title = " " + title
@@ -32,8 +34,8 @@ var Logger = func(level int, message string, a ...any) {
 	fmt.Printf("[eventide%s] %s:%d: %s\n", title, fileSplit[len(fileSplit)-1], line, fmt.Sprintf(message, a...))
 }
 
-func (c *Client) log(level int, message string, a ...any) {
-	if level > c.LogLevel {
+func (c *Client) log(level LogLevel, message string, a ...any) {
+	if level > c.logLevel {
 		return
 	}
 	Logger(level, message, a...)

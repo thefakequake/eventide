@@ -11,6 +11,7 @@ type Handler struct {
 	Callback reflect.Value
 }
 
+// Adds an event handler based on the handler's function signature
 func (c *Client) AddHandler(h any) {
 	v := reflect.ValueOf(h)
 	t := v.Type()
@@ -34,41 +35,43 @@ func (c *Client) AddHandler(h any) {
 	c.handlersLock.Unlock()
 }
 
-func (c *Client) runHandlers(op Op[json.RawMessage]) {
+func (c *Client) runHandlers(op discord.GatewayPayload[json.RawMessage]) {
 	e, err := eventCodec.DecodeEvent(op)
 	if err != nil {
-		c.log(LogWarn, "failed to decode event %s: %s", op.Type, err)
+		c.log(LogWarn, "failed to decode event: %s", err)
 		return
 	}
 	v := reflect.ValueOf(e)
 
 	c.handlersLock.RLock()
 	for _, h := range c.handlers[v.Type()] {
-		go h.Callback.Call([]reflect.Value{v})
+		h.Callback.Call([]reflect.Value{v})
 	}
 	c.handlersLock.RUnlock()
 }
 
-func (c *Client) registerHandlers() {
-	c.AddHandler(func(r *discord.Ready) {
+// Registers built in handlers for the client's internal use
+func (c *Client) registerDefaultHandlers() {
+	c.AddHandler(func(r *discord.ReadyEvent) {
 		c.Lock()
 		c.User = r.User
+		c.sessionID = r.SessionID
 		c.Unlock()
 	})
 
-	c.AddHandler(func(g *discord.GuildCreate) {
+	c.AddHandler(func(g *discord.GuildUpdateEvent) {
 		c.guildsLock.Lock()
 		c.Guilds[g.ID] = g.Guild
 		c.guildsLock.Unlock()
 	})
 
-	c.AddHandler(func(g *discord.GuildCreate) {
+	c.AddHandler(func(g *discord.GuildCreateEvent) {
 		c.guildsLock.Lock()
 		c.Guilds[g.ID] = g.Guild
 		c.guildsLock.Unlock()
 	})
 
-	c.AddHandler(func(g *discord.GuildDelete) {
+	c.AddHandler(func(g *discord.GuildDeleteEvent) {
 		c.guildsLock.Lock()
 		delete(c.Guilds, g.ID)
 		c.guildsLock.Unlock()

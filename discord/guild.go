@@ -222,6 +222,15 @@ const (
 	GuildFeatureWelcomeScreenEnabled          GuildFeature = "WELCOME_SCREEN_ENABLED"
 )
 
+// https://discord.com/developers/docs/resources/guild#unavailable-guild-object-example-unavailable-guild
+type UnavailableGuild struct {
+	// Guild ID
+	ID string `json:"id"`
+
+	// True if the guild is unavailable
+	Unavailable bool `json:"unavailable"`
+}
+
 // https://discord.com/developers/docs/resources/guild#guild-preview-object-guild-preview-structure
 type GuildPreview struct {
 	// Guild ID

@@ -1,18 +1,25 @@
 package discord
 
+import "time"
+
 // https://discord.com/developers/docs/topics/gateway#payloads-gateway-payload-structure
-type GatewayPayload struct {
+type GatewayPayload[T any] struct {
 	// Opcode for the payload
 	Op int `json:"op"`
 
 	// Event data
-	D interface{} `json:"d"`
+	Data T `json:"d,omitempty"`
 
 	// Sequence number, used for resuming sessions and heartbeats
-	S int `json:"s"`
+	Sequence int64 `json:"s,omitempty"`
 
 	// The event name for this payload
-	T string `json:"t"`
+	Type string `json:"t,omitempty"`
+}
+
+// https://discord.com/developers/docs/topics/gateway#connecting-gateway-url-query-string-params
+type GetGateway struct {
+	URL string `json:"url"`
 }
 
 // https://discord.com/developers/docs/topics/gateway#identify-identify-structure
@@ -36,7 +43,7 @@ type Identify struct {
 	Presence *GatewayPresenceUpdate `json:"presence,omitempty"`
 
 	// The Gateway Intents you wish to receive
-	Intents int `json:"intents"`
+	Intents Intents `json:"intents"`
 }
 
 // https://discord.com/developers/docs/topics/gateway#identify-identify-connection-properties
@@ -60,7 +67,7 @@ type Resume struct {
 	SessionID string `json:"session_id"`
 
 	// Last sequence number received
-	Seq int `json:"seq"`
+	Seq int64 `json:"seq"`
 }
 
 // https://discord.com/developers/docs/topics/gateway#request-guild-members-guild-request-members-structure
@@ -117,7 +124,19 @@ type GatewayPresenceUpdate struct {
 // https://discord.com/developers/docs/topics/gateway#hello-hello-structure
 type Hello struct {
 	// The interval (in milliseconds) the client should heartbeat with
-	HeartbeatInterval int `json:"heartbeat_interval"`
+	HeartbeatInterval time.Duration `json:"heartbeat_interval"`
+}
+
+// https://discord.com/developers/docs/topics/gateway#client-status-object
+type ClientStatus struct {
+	// The user's status set for an active desktop (Windows, Linux, Mac) application session
+	Desktop string `json:"desktop,omitempty"`
+
+	// The user's status set for an active mobile (iOS, Android) application session
+	Mobile string `json:"mobile,omitempty"`
+
+	// The user's status set for an active web (browser, bot account) application session
+	Web string `json:"web"`
 }
 
 // https://discord.com/developers/docs/topics/gateway#activity-object-activity-structure
@@ -165,7 +184,7 @@ type Activity struct {
 	Flags ActivityFlags `json:"flags,omitempty"`
 
 	// The custom buttons shown in the Rich Presence (max 2)
-	Buttons []*ActivityButton `json:"buttons,omitempty"`
+	Buttons []string `json:"buttons,omitempty"`
 }
 
 // https://discord.com/developers/docs/topics/gateway#activity-object-activity-types
